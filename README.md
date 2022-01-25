@@ -1,1 +1,1 @@
-![alt text](https://github.com/marcusazevedo/dt_money/blob/master/Desafio_RN.png)
+![alt text](https://github.com/marcusazevedo/ignite-react-native-desafio-01/blob/main/Desafio_RN.png)
