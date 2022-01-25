@@ -1,14 +1,25 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import { Header } from '../components/Header';
 import { Task, TasksList } from '../components/TasksList';
 import { TodoInput } from '../components/TodoInput';
 
+export type EditTaskArgs = {
+  taskId: number;
+  taskNewTitle: string;
+}
+
 export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
 
   function handleAddTask(newTaskTitle: string) {
+    const taskWithSameTitle = tasks.find(task => task.title === newTaskTitle);
+
+    if(taskWithSameTitle){
+      return Alert.alert('Task já cadastrada', 'Você não pode inserir uma tarefa que tenha um título já existente')
+    }
+
     const newTask = {
       id: new Date().getTime(),
       title: newTaskTitle,
@@ -32,10 +43,37 @@ export function Home() {
     }
   }
 
-  function handleRemoveTask(id: number) {
-    const updateTask = tasks.filter(task => task.id !== id);
+  function handleEditTask({taskId, taskNewTitle}: EditTaskArgs) {
+    const updatedTask = tasks.map(task => ({...task}))
 
-    setTasks(updateTask)
+    const taskToBeUpdated = updatedTask.find(item => item.id === taskId);
+
+    if(!taskToBeUpdated) {
+      return;
+
+    } else {
+      taskToBeUpdated.title = taskNewTitle;
+      setTasks(updatedTask)
+    }
+
+  }
+
+  function handleRemoveTask(id: number) {
+    Alert.alert('Remover item', 'Tem certeza que você deseja remover a tareda?', [
+      {
+        style: 'cancel',
+        text: 'Não'
+      },
+      {
+        style: 'destructive',
+        text: 'Sim',
+        onPress: () => {
+          const updateTask = tasks.filter(task => task.id !== id);
+
+        setTasks(updateTask)
+        }
+      }
+    ])
   }
 
   return (
@@ -48,6 +86,7 @@ export function Home() {
         tasks={tasks} 
         toggleTaskDone={handleToggleTaskDone}
         removeTask={handleRemoveTask} 
+        editTask={handleEditTask}
       />
     </View>
   )
